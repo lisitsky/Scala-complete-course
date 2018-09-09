@@ -10,7 +10,7 @@ package lectures.functions
   */
 trait Data {
   val filterData = "Клара у Карла украла корралы, Карл у Клары украл кларнет"
-  val dataArray = "Клара Цеткин обожала Карла Маркса".split(" ")
+  val dataArray: Array[String] = "Клара Цеткин обожала Карла Маркса".split(" ")
 }
 
 object Computation extends App with Data {
@@ -37,16 +37,20 @@ object Computation extends App with Data {
   *
   * Раскомментируйте последнюю строчку
   *
-  * Какой тип имеет partiallyAppliedCurriedFunction - ?
+  * Какой тип имеет partiallyAppliedCurriedFunction - Array[String] => Array[String]
   */
 object CurriedComputation extends App with Data {
 
-  def curriedComputation(filterData: String)(dataProducer: Array[String]): Array[String] = ???
+  def curriedComputation(filterData: String)(dataProducer: Array[String]): Array[String] = {
+    val filterArray = filterData.split(" ")
 
-  val partiallyAppliedCurriedFunction = ???
+    dataProducer.filter(dataItem => filterArray.contains(dataItem))
+  }
 
-  //val result = partiallyAppliedCurriedFunction(dataArray)
-  //result.foreach(println)
+  val partiallyAppliedCurriedFunction = curriedComputation(filterData)_
+
+  val result = partiallyAppliedCurriedFunction(dataArray)
+  result.foreach(println)
 }
 
 /**
@@ -56,10 +60,17 @@ object CurriedComputation extends App with Data {
   */
 object FunctionalComputation extends App with Data {
 
-  def functionalComputation(filterData: String): (Array[String]) => Array[String] = ???
+  def functionalComputation(filterData: String): Array[String] => Array[String] = {
+    val filterArray = filterData.split(" ")
+    /* В данном случае функция является замыканием?
+    * Как себя ведет  GC в этой ситуации?
+    * Насколько эффективно собирается мусор?
+    * Можно ли собрать исходную строку? */
+    dataArr: Array[String] => dataArr.filter(dataItem => filterArray.contains(dataItem))
+  }
 
-  val filterApplied = functionalComputation(???)
+  val filterApplied = functionalComputation(filterData)
 
-  val result = filterApplied(???)
+  val result = filterApplied(dataArray)
   result.foreach(println)
 }

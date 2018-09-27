@@ -1,5 +1,7 @@
 package lectures.matching
 
+import scala.annotation.tailrec
+
 /**
   * Раскладывание вещей по коробкам
   *
@@ -71,6 +73,7 @@ object SortingStuff extends App {
 
    // Замените знаки вопроса подходящим кодом
    // Поправьте логику метода
+  @tailrec
     private def sort(stuff: List[Stuff], stuffBox: StuffBox): StuffBox = stuff match {
       case Nil => stuffBox
       case item :: rest =>

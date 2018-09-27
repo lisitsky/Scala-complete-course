@@ -65,7 +65,7 @@ object Competition extends App {
 
 
 
-  // Стандартный императивный способ подсчета разеультата
+  // Стандартный императивный способ подсчета результата
   val calcResult1 = (results: Map[_, Int]) => {
     var finalResult = 0
     for (r <- results) {

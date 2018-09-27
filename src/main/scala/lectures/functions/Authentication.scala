@@ -1,5 +1,7 @@
 package lectures.functions
 
+import java.lang.StackWalker
+
 import scala.util.Random
 
 /**
@@ -30,12 +32,25 @@ object Authentication extends App {
 
   import AuthenticationData._
 
-// val authByCard: PartialFunction[???, ???] = ???
+// val authByCard: PartialFunction[CardCredentials, Boolean] = registeredCards.contains _
+ val authByCard: PartialFunction[CardCredentials, Boolean] = {
+   case cc: CardCredentials if registeredCards.contains(cc) => true
+ }
 
 // val authByLP: PartialFunction[???, ???] = ???
+  val authByLP: PartialFunction[LPCredentials, Boolean] = {
+    case lpc: LPCredentials if registeredLoginAndPassword.contains(lpc) => true
+  }
+// val authByLP: PartialFunction[LPCredentials, Boolean] = registeredLoginAndPassword.contains _
 
   val authenticated: List[Option[User]] = for (user <- testUsers) yield {
-    ???
+        val authBySmth: PartialFunction[User, User] = {
+            case u: CardUser if authByCard.lift(u.credentials).contains(true) => u
+            case u: LPUser if authByLP.lift(u.credentials).contains(true) => u
+          }
+
+        authBySmth.lift(user)
+
   }
 
  authenticated.flatten foreach println

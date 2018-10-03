@@ -29,7 +29,7 @@ class SQLAPI(resource: String) {
 
   case class Connection(resource: String, opened: Boolean = false) {
 
-    private val result = "SQL has been executed. Congrats!"
+    private val result : String = "SQL has been executed. Congrats!"
 
     def open(): Connection = this.copy(opened = true)
 
@@ -37,11 +37,56 @@ class SQLAPI(resource: String) {
 
   }
 
-  private def logParameter[T](prm: T): T  = ???
+  private def logParameter[T](prm: T): T  = {
+    println(prm)
+    prm:T
+  }
 
   val connection = (resource: String) => Connection(resource)
 
-  def execute(sql: String): String = ??? // use resource from constructor
+  def execute(sql: String): String = {
+    // this works well!
+    logParameter(
+      connection(
+        logParameter(resource)
+      ).open().execute(
+        logParameter(sql)
+      )
+    )
+
+    println("= Next =")
+
+    // try to rewrite it without dots :)
+    val logParameterStr = logParameter[String](_)  // What's this?
+    val conn = connection compose logParameterStr apply resource
+//    val executor2 = openConnection  (connection compose logParameterStr apply resource)
+    val executor = openConnection(conn)
+    var resulter = logParameterStr andThen executor andThen logParameterStr
+    resulter(sql)
+  }
+
+//
+//  def execute(sql: String): String = {
+//
+//    (logParameter andThen connection)(sql)
+//    // use resource from constructor
+//    val conn = connection(logParameter(resource))  // не получается использовать compose/andThen
+////    logParameter(resource) andThen connection    // Type mismatch, expected: Char => NotInferedC, actual: String => SQLAPI.this.Connection
+//    logParameter(sql)
+//    val result = openConnection(conn)(sql) andThen logParameter
+//    result
+//  }
+
+  def executeOldStyle(sql: String): String = {
+    // use resource from constructor
+    logParameter(resource)
+    var conn = connection(resource)
+    logParameter(sql)
+    conn = conn.open()
+    val result = conn.execute(sql)
+    logParameter(result)
+    result
+  }
 
 
   def openConnection(connection: Connection): (String) => String =

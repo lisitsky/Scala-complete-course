@@ -1,5 +1,7 @@
 package lectures.collections
 
+import scala.annotation.meta.getter
+import scala.annotation.tailrec
 import scala.util.Random
 
 /**
@@ -49,10 +51,13 @@ object ConnectionProducer extends FailUtil {
 }
 
 case class Connection(resource: Resource) {
-  private val defaultResult = "something went wrong!"
+  private val _defaultResult = "something went wrong!"
 
   //ConnectionProducer.result(this)
-  def result(): String = ???
+  def result(): String = ConnectionProducer.result(this)
+
+  @getter
+  def getDefaultResult: String = _defaultResult
 }
 
 case class Resource(name: String)
@@ -61,11 +66,35 @@ object OptionVsNPE extends App {
 
   def businessLogic: String = try {
     // ResourceProducer
-    val result: String = ???
+    val resource: Resource = Option(ResourceProducer.produce) match {
+      case Some(str) => str
+      case None => throw new ResourceException
+    }
+
+    val resource2: Resource = Option(ResourceProducer.produce).getOrElse(throw new ResourceException)
+
+    @tailrec
+    def getConnection(res: Resource): Connection =  {
+      println("// Getting connection")
+      Option(ConnectionProducer.produce(res)) match {
+        case Some(value) => value
+        case None => getConnection(res)
+      }
+    }
+
+    val connection = getConnection(resource2)
+    val result: String = Option(connection.result()) match {
+      case Some(value) => value
+      case None => connection.getDefaultResult
+    }
+
     println(result)
     result
   } catch {
-    case e: ResourceException => ???
+    case e: ResourceException => {
+      println("Try again with new resource")
+      businessLogic
+    }
   }
 
   businessLogic

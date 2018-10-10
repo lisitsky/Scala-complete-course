@@ -36,7 +36,9 @@ libraryDependencies += "org.typelevel" %% "cats-free" % "1.1.0"
 libraryDependencies += "org.typelevel" %% "cats-laws" % "1.1.0"
 
 libraryDependencies += "org.xerial" % "sqlite-jdbc" % "3.7.2"
-libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.1" % "test"
+//libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.1" % "test"
+libraryDependencies += "org.scalactic" %% "scalactic" % "3.0.5"
+libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.5" % "test"
 
 libraryDependencies += "de.sciss" %% "coroutines-common" % "0.1.0"
 

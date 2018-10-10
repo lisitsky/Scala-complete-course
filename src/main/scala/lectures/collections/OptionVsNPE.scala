@@ -91,10 +91,10 @@ object OptionVsNPE extends App {
     println(result)
     result
   } catch {
-    case e: ResourceException => {
+    case e: ResourceException =>
       println("Try again with new resource")
+      println(s"// We've got error: $e")
       businessLogic
-    }
   }
 
   businessLogic

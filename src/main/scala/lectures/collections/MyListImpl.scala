@@ -24,7 +24,8 @@ object MyListImpl extends App {
     def flatMap(f: Int => MyList) =
       MyList(data.flatMap(inp => f(inp).data))
 
-    def map(f: Int => Int) = MyList(data map f)
+    def map(f: Int => Int): MyList = this.flatMap(x => MyList(List(f(x))))
+//    def map(f: Int => Int): MyList = this.flatMap(f andThen List[Int] _ andThen MyList)
 
     @tailrec
     final def foldLeft(acc: Int)(f: (Int, Int) => Int): Int = data match {

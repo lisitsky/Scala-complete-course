@@ -7,30 +7,38 @@ package lectures.collections
   */
 object MergeSortImpl extends App {
 
-  def mergeSort(data: Seq[Int]) = mergeSortList(data.toList)
-
-  def mergeSortList(data: List[Int]): List[Int] = data match {
+  def mergeSort(data: Seq[Int]): Seq[Int] = data match {
     case Nil => Nil
-    case a@List(_) => a
+    case a@Seq(_) => a
     case _ =>
       val mid: Int = data.length / 2
       val (first, last) = data splitAt mid
-      val firstSorted = mergeSortList(first)
-      val lastSorted = mergeSortList(last)
+      val firstSorted = mergeSort(first)
+      val lastSorted = mergeSort(last)
       merge(firstSorted, lastSorted)
   }
 
-  private def merge(a: List[Int], b: List[Int]): List[Int] = {
-    if (a.isEmpty) {b}
-    else if (b.isEmpty) {a}
+  private def merge2(left: Seq[Int], right: Seq[Int]): Seq[Int] = {
+    if (left.isEmpty) {right}
+    else if (right.isEmpty) {left}
     else {
-      if (a.head < b.head) {
-        a.head :: merge(a.tail, b)
+      if (left.head < right.head) {
+        Seq(left.head) ++ merge(left.tail, right)
       } else {
-        b.head :: merge(a, b.tail)
+        Seq(right.head) ++ merge(left, right.tail)
       }
     }
   }
+
+
+  private def merge(left: Seq[Int], right: Seq[Int]): Seq[Int] = (left, right) match {
+    case (Nil, _) => right
+    case (_, Nil) => left
+    case (_, _) if left.head < right.head => Seq(left.head) ++ merge(left.tail, right)
+    case (_, _) => Seq(right.head) ++ merge(left, right.tail)
+
+  }
+
 
 //  val sorted = mergeSort(Seq(10, 9, 3, 8, 5, 2, -9, 11, 0, 9, 3))
 //  println(Seq(10, 9, 3, 8, 5, 2, -9, 11, 0, 9, 3))

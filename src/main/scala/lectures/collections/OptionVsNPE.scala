@@ -79,13 +79,13 @@ object OptionVsNPE extends App {
         case Some(value) => value
         case None => getConnection(res)
       }
+//      Option(ConnectionProducer.produce(res)).getOrElse(getConnection(res))
     }
 
     val connection = getConnection(resource2)
     val result: String = Option(connection.result()) match {
       case Some(value) => value
       case None => connection.defaultResult
-      case None => connection.getDefaultResult
     }
 
     println(result)

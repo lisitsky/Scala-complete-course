@@ -51,54 +51,30 @@ object CouriersWithComprehension extends App {
   val addrs = addresses(addressesCount)
   val cours = couriers(courierCount)
 
-//  implicit val canServe = None //Some(8)
-  implicit val canServe = Some(8)
+  implicit val canServe = None // quick toggle
+//  implicit val canServe = Some(8)
 
   // какие адреса были обслужены
   def serveAddresses(addresses: List[Address], couriers: List[Courier])(implicit canServe: Option[Int]) = {
-//    val henerator:Iterator[Int] = Iterator.from(0)
-//    val henerator = Stream.from(0)
     val henerator = 1 to addresses.length
 
-    val canServeGetter: Courier => Int = _.canServe
     val canServer: Courier => Int = canServe match {
       case Some(value) => _ => value
-      //      case None => _.canServe //canServeGetter
-      case None => canServeGetter
+      case None => _.canServe
     }
-
-//    for (courier <- couriers;
-//         trafficDegree = traffic().degree;
-//         courierCanServeValue = canServer(courier);
-//         t <- 0 until courierCanServeValue if trafficDegree < 5 && accum < addresses.length
-//    ) yield {
-//      //      println(courierCanServeValue)
-//      val addr = addresses(accum)
-//      accum = accum + 1
-//      addr
-//    }
 
     couriers.flatMap(courier => {
       val trafficDegree = traffic().degree
       (0 until canServer(courier))
         .filter( t => trafficDegree < 5)
-    }).toList
-    .zip(henerator)  // не принимает GenIterator
-    .map( v  => {
-      println(v)
-      val addr = addresses(v._1)
-      addr
     })
-//        .zip(_, henerator)
-    //})
+    .zip(1 to addresses.length)
+    .map(v  => addresses(v._1))
   }
 
   def traffic(): Traffic = new Traffic(Math.random() * 10)
 
   def printServedAddresses(addresses: List[Address], couriers: List[Courier]) =
-//    for (a <- serveAddresses(addresses, couriers)) {
-//      println(a.postIndex)
-//    }
     serveAddresses(addresses, couriers).foreach(a => println(a.postIndex))
 
   printServedAddresses(addrs, cours)

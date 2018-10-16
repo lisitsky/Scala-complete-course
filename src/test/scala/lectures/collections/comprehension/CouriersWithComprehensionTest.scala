@@ -26,8 +26,10 @@ class CourierComprehensionTest extends FunSuite with Matchers {
     val addresses = Address.addresses(3)
     implicit var canServe:Option[Int] = Some(3)
     (CouriersWithComprehension.serveAddresses(addresses, couriers):List[Address]) shouldBe List(Address("111"), Address("222"), Address("333"))
+
     canServe = Some(8)
     (CouriersWithComprehension.serveAddresses(addresses, couriers):List[Address]) shouldBe List(Address("111"), Address("222"), Address("333"))
+
     canServe = None
     println(CouriersWithComprehension.serveAddresses(addresses, couriers))
 //    (CouriersWithComprehension.serveAddresses(addresses, couriers):List[Address]) shouldBe List()

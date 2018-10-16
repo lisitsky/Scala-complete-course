@@ -1,5 +1,9 @@
 package lectures.collections.comprehension
 
+import lectures.collections.comprehension
+
+import scala.collection.GenIterable
+
 /**
   * Помогите курьерам разобраться с обслуживанием адресов
   *
@@ -23,10 +27,7 @@ package lectures.collections.comprehension
 case class Traffic(degree: Double)
 
 object Courier {
-  def couriers(courierCount: Int): List[Courier] =
-    (for (i <- 1 to courierCount) yield {
-      Courier(i)
-    }).toList
+  def couriers(couriersCount: Int): List[Courier] = (1 to couriersCount).map{Courier(_)}.toList
 }
 
 case class Courier(index: Int) {
@@ -34,10 +35,7 @@ case class Courier(index: Int) {
 }
 
 object Address {
-  def addresses(addressesCount: Int): List[Address] =
-    (for (i <- 1 to addressesCount) yield {
-      Address(s"$i$i$i")
-    }).toList
+  def addresses(addressesCount: Int): List[Address] = (1 to addressesCount).map{i=>Address(s"$i$i$i")}.toList
 }
 
 case class Address(postIndex: String)
@@ -53,25 +51,55 @@ object CouriersWithComprehension extends App {
   val addrs = addresses(addressesCount)
   val cours = couriers(courierCount)
 
+//  implicit val canServe = None //Some(8)
+  implicit val canServe = Some(8)
+
   // какие адреса были обслужены
-  def serveAddresses(addresses: List[Address], couriers: List[Courier]) = {
-    var accum = 0
-    for (courier <- couriers;
-         trafficDegree = traffic().degree;
-         t <- 0 until courier.canServe if trafficDegree < 5 && accum < addresses.length
-    ) yield {
-      val addr = addresses(accum)
-      accum = accum + 1
-      addr
+  def serveAddresses(addresses: List[Address], couriers: List[Courier])(implicit canServe: Option[Int]) = {
+//    val henerator:Iterator[Int] = Iterator.from(0)
+//    val henerator = Stream.from(0)
+    val henerator = 1 to addresses.length
+
+    val canServeGetter: Courier => Int = _.canServe
+    val canServer: Courier => Int = canServe match {
+      case Some(value) => _ => value
+      //      case None => _.canServe //canServeGetter
+      case None => canServeGetter
     }
+
+//    for (courier <- couriers;
+//         trafficDegree = traffic().degree;
+//         courierCanServeValue = canServer(courier);
+//         t <- 0 until courierCanServeValue if trafficDegree < 5 && accum < addresses.length
+//    ) yield {
+//      //      println(courierCanServeValue)
+//      val addr = addresses(accum)
+//      accum = accum + 1
+//      addr
+//    }
+
+    couriers.flatMap(courier => {
+      val trafficDegree = traffic().degree
+      (0 until canServer(courier))
+        .filter( t => trafficDegree < 5)
+    }).toList
+    .zip(henerator)  // не принимает GenIterator
+    .map( v  => {
+      println(v)
+      val addr = addresses(v._1)
+      addr
+    })
+//        .zip(_, henerator)
+    //})
   }
 
   def traffic(): Traffic = new Traffic(Math.random() * 10)
 
   def printServedAddresses(addresses: List[Address], couriers: List[Courier]) =
-    for (a <- serveAddresses(addresses, couriers)) {
-      println(a.postIndex)
-    }
+//    for (a <- serveAddresses(addresses, couriers)) {
+//      println(a.postIndex)
+//    }
+    serveAddresses(addresses, couriers).foreach(a => println(a.postIndex))
 
   printServedAddresses(addrs, cours)
 

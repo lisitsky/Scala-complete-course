@@ -1,6 +1,5 @@
 package lectures.collections.comprehension
 
-import lectures.collections.comprehension
 import org.scalatest.{FunSuite, Matchers}
 
 class CourierComprehensionTest extends FunSuite with Matchers {
@@ -32,7 +31,6 @@ class CourierComprehensionTest extends FunSuite with Matchers {
 
     canServe = None
     println(CouriersWithComprehension.serveAddresses(addresses, couriers))
-//    (CouriersWithComprehension.serveAddresses(addresses, couriers):List[Address]) shouldBe List()
   }
 
   val couriers = Courier.couriers(7)

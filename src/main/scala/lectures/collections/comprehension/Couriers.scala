@@ -1,9 +1,5 @@
 package lectures.collections.comprehension
 
-import lectures.collections.comprehension
-
-import scala.collection.GenIterable
-
 /**
   * Помогите курьерам разобраться с обслуживанием адресов
   *
@@ -56,7 +52,6 @@ object CouriersWithComprehension extends App {
 
   // какие адреса были обслужены
   def serveAddresses(addresses: List[Address], couriers: List[Courier])(implicit canServe: Option[Int]) = {
-    val henerator = 1 to addresses.length
 
     val canServer: Courier => Int = canServe match {
       case Some(value) => _ => value
@@ -66,7 +61,7 @@ object CouriersWithComprehension extends App {
     couriers.flatMap(courier => {
       val trafficDegree = traffic().degree
       (0 until canServer(courier))
-        .filter( t => trafficDegree < 5)
+        .filter( _ => trafficDegree < 5)
     })
     .zip(1 to addresses.length)
     .map(v  => addresses(v._1))

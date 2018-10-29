@@ -19,8 +19,8 @@ object MergeSortImpl extends App {
   }
 
   private def merge2(left: Seq[Int], right: Seq[Int]): Seq[Int] = {
-    if (left.isEmpty) {right}
-    else if (right.isEmpty) {left}
+    if (left.isEmpty) right
+    else if (right.isEmpty) left
     else {
       if (left.head < right.head) {
         Seq(left.head) ++ merge(left.tail, right)
@@ -34,9 +34,11 @@ object MergeSortImpl extends App {
   private def merge(left: Seq[Int], right: Seq[Int]): Seq[Int] = (left, right) match {
     case (Nil, _) => right
     case (_, Nil) => left
-    case (_, _) if left.head < right.head => Seq(left.head) ++ merge(left.tail, right)
-    case (_, _) => Seq(right.head) ++ merge(left, right.tail)
-
+    case (leftHead +: leftTail, rightHead +: rightTail) => if (leftHead < rightHead) {
+                                                              leftHead +: merge(leftTail, right)
+                                                            } else {
+                                                              rightHead +: merge(left, rightTail)
+                                                            }
   }
 
 

@@ -64,7 +64,7 @@ object Competition extends App {
   )
 
 
-
+  // Подсчет результатов соревнования различными способами
   // Стандартный императивный способ подсчета результата
   val calcResult1 = (results: Map[_, Int]) => {
     var finalResult = 0

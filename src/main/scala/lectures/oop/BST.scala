@@ -1,7 +1,5 @@
 package lectures.oop
 
-import akka.japi
-
 
 /**
   * BSTImpl - это бинарное дерево поиска, содержащее только значения типа Int

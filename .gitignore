@@ -31,3 +31,8 @@ logs
 
 # test logs
 /catalina.home_IS_UNDEFINED
+
+#some Mac stuff
+.DS_Store
+
+memory

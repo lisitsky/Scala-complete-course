@@ -1,5 +1,7 @@
 package lectures.oop
 
+import akka.japi
+
 
 /**
   * BSTImpl - это бинарное дерево поиска, содержащее только значения типа Int
@@ -36,9 +38,26 @@ case class BSTImpl(value: Int,
                    left: Option[BSTImpl] = None,
                    right: Option[BSTImpl] = None) extends BST {
 
-  def add(newValue: Int): BST = ???
+  def add(newValue: Int): BST = {
+    if (newValue == value) {
+      // ignore adding existing value
+      this
+    } else {
+      if (newValue < value) {
+        left map (_ add newValue)  getOrElse this.copy(left=Some(BSTImpl(newValue)))
+      } else {
+        right map(_ add newValue) getOrElse this.copy(right=Some(BSTImpl(newValue)))
+      }
+    }
+  }
 
-  def find(value: Int): Option[BST] = ???
+  def find(value: Int): Option[BST] = findRec.lift(value)
+
+  private val findRec: PartialFunction[Int, BST] =  {
+    case v if v == value => this
+    case v if v <  value => left.map {x => x.findRec(v)}.get
+    case v => right.map {x => x.findRec(v)}.get
+  }
 
   // override def toString() = ???
 

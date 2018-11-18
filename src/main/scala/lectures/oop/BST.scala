@@ -122,8 +122,8 @@ object TreeTest extends App {
 
   val sc = new java.util.Scanner(System.in)
   val maxValue = 110000
-//  val nodesCount = sc.nextInt()
-  val nodesCount = 5
+  val nodesCount = sc.nextInt()
+//  val nodesCount = 5
 
   val markerItem = (Math.random() * maxValue).toInt
   val markerItem2 = (Math.random() * maxValue).toInt

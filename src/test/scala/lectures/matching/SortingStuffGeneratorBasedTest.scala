@@ -1,6 +1,6 @@
 package lectures.matching
 
-import lectures.matching.SortingStuff.{Book, StuffBox, Watches}
+import lectures.matching.SortingStuff.{Book, Knife, Stuff, StuffBox, Watches}
 import org.scalacheck.Gen
 import org.scalatest.prop.PropertyChecks
 import org.scalatest.{Matchers, WordSpec}
@@ -34,6 +34,7 @@ class SortingStuffGeneratorBasedTest extends WordSpec with Matchers with Propert
   val cheepWatchGen: Gen[Watches] = Gen.zip(Gen.choose(0f, 1000f), Gen.alphaStr).map(w => Watches(w._2, w._1))
   val bookGenerator: Gen[Book] = Gen.alphaStr.map(name => Book(name, Random.nextBoolean()))
   val interestingBookGen: Gen[Book] = bookGenerator.filter(_.isInteresting)
+  val knifeGen: Gen[Option[Knife.type]] = Gen.option(Knife)
 
   // Override configuration if you need
   implicit override val generatorDrivenConfig: PropertyCheckConfiguration =
@@ -72,11 +73,23 @@ class SortingStuffGeneratorBasedTest extends WordSpec with Matchers with Propert
       }
     }
     "find knife" which {
-      "was occasionally disposed" in pending
+      "was occasionally disposed" in {
+        val ms = generatorDrivenConfig.minSuccessful
+
+        val books = (1 to ms) flatMap { _ => interestingBookGen.sample }
+        val knife = knifeGen.sample.flatten
+        val objectsToSort = Random.shuffle(books ++ List(knife).flatten).toList
+        knife.isDefined shouldBe SortingStuff.findMyKnife(SortingStuff.sortJunk(objectsToSort))
+
+
+      }
     }
 
     "put boots in a proper place" when {
-      "boots were produced by Converse or Adidas" in pending
+      "boots were produced by Converse or Adidas" in {
+        
+      }
+
     }
   }
 }

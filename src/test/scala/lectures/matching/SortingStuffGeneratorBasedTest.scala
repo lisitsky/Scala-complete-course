@@ -1,6 +1,6 @@
 package lectures.matching
 
-import lectures.matching.SortingStuff.{Book, Knife, Stuff, StuffBox, Watches}
+import lectures.matching.SortingStuff.{Book, Knife, Stuff, StuffBox, Watches, Boots}
 import org.scalacheck.Gen
 import org.scalatest.prop.PropertyChecks
 import org.scalatest.{Matchers, WordSpec}
@@ -35,6 +35,7 @@ class SortingStuffGeneratorBasedTest extends WordSpec with Matchers with Propert
   val bookGenerator: Gen[Book] = Gen.alphaStr.map(name => Book(name, Random.nextBoolean()))
   val interestingBookGen: Gen[Book] = bookGenerator.filter(_.isInteresting)
   val knifeGen: Gen[Option[Knife.type]] = Gen.option(Knife)
+  val bootsGen: Gen[Boots] = Gen.zip(Gen.choose(min = 37, max = 45), Gen.oneOf("Converse", "Adidas")).map(w => Boots(w._2, w._1))
 
   // Override configuration if you need
   implicit override val generatorDrivenConfig: PropertyCheckConfiguration =
@@ -60,7 +61,7 @@ class SortingStuffGeneratorBasedTest extends WordSpec with Matchers with Propert
 
   "Sort stuff" should {
     "return collections" which {
-      "total size is equal to item amount" in pendingUntilFixed{
+      "total size is equal to item amount" in {
         val ms = generatorDrivenConfig.minSuccessful
 
         val books = (1 to ms) flatMap { _ => interestingBookGen.sample }
@@ -68,8 +69,8 @@ class SortingStuffGeneratorBasedTest extends WordSpec with Matchers with Propert
 
         val StuffBox(goodBooks, niceWatches, _, junk) = SortingStuff.sortJunk(Random.shuffle(books ++ watches).toList)
         goodBooks should have size books.size
-        niceWatches should have size 0
-        junk should have size watches.size
+        niceWatches should have size watches.size
+        junk should have size 0
       }
     }
     "find knife" which {
@@ -86,8 +87,18 @@ class SortingStuffGeneratorBasedTest extends WordSpec with Matchers with Propert
     }
 
     "put boots in a proper place" when {
-      "boots were produced by Converse or Adidas" in {
-        
+      "boots were produced by Converse or Adidas" in  {
+        val ms = generatorDrivenConfig.minSuccessful
+        val boots = (1 to ms) flatMap { _ => bootsGen.sample }
+        val books = (1 to ms) flatMap { _ => bookGenerator.sample }
+        val knife = knifeGen.sample.flatten
+        val objectsToSort = Random.shuffle(boots ++ books ++ List(knife).flatten).toList
+        val StuffBox(sortedBooks, sortedWatches, sortedBoots, _) = SortingStuff.sortJunk(objectsToSort)
+        sortedBooks should have size books.size
+        sortedBooks should not contain boots
+        sortedWatches should not contain boots
+        sortedBoots should have size boots.size
+        sortedBoots.sortBy(Boots.unapply) shouldBe boots.sortBy(Boots.unapply)
       }
 
     }

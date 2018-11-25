@@ -22,49 +22,36 @@ package lectures.oop
   * * * * содержимое FishermansApp менять нельзя
   **/
 
-trait NoLetter {
-  def str: String = ""
+
+trait PartY {
+  def str: String = "Y"
 }
 
-trait Letter extends NoLetter {
-  def GetStr: String = {this.str + super.str}
 
-  override def str: String = super.str
-//  abstract override val _str: String
+trait PartD extends PartY {
+  abstract override def str: String = super.str + "D"
 }
 
-//??? PartD {
-//  ??? str = "D"
-//}
-//
-//??? PartY {
-//  ??? str = "Y"
-//}
-//
-//??? PartCH {
-//  ??? str = "CH"
-//}
-//
-trait PartK extends Letter{
-  println("K")
-  override val str = GetStr + "R"
+trait PartA {
+   def str: String = "A"
 }
 
-trait PartA extends PartK{
-  println("A")
-  override val str = GetStr + "A"
+trait PartK extends PartA {
+   abstract override def str: String = "K" + super.str
 }
 
-class PartO extends PartA {
-  println("O")
-  //  override def str = "O" + super.str
-  override val str = GetStr + "O"
+trait PartCH extends PartK {
+  abstract override def str: String = "CH" + super.str
 }
-//
+
+class PartO  extends PartCH with PartD {
+  self: PartO =>
+  override def str: String = super[PartD].str + "O" + super[PartCH].str
+}
+
 object FishermansApp extends App {
   val o = new PartO
   println(o.str)
-//  println(o.GetStr)
 }
 
 

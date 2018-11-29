@@ -41,8 +41,12 @@ class ConcreteClass extends NameProvider with AnotherNameProvider {
 
 object InheritanceTest extends App {
   val k = new ConcreteClass()
+  println()
   k.whoAmI()
   val n = k.name
+
+  val q: Q = new QQ()
+  println("%T", q)
 }
 
 /*
@@ -55,8 +59,13 @@ name is `Concrete class` in AnotherNameProvider
 name is `Concrete class` in NameProvider
 */
 
+abstract trait Q {
+  def q: Int
+}
 
-
+class QQ extends Q {
+  def q: Int = 5
+}
 
 
 

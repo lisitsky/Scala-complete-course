@@ -1,6 +1,7 @@
 package lectures.collections
 
 import scala.annotation.tailrec
+import scala.collection.mutable.{ArrayBuffer, ListBuffer}
 
 /**
   * Представим, что по какой-то причине Вам понадобилась своя обертка над списком целых чисел List[Int]
@@ -19,31 +20,28 @@ import scala.annotation.tailrec
   */
 object MyListImpl extends App {
 
-  case class MyList(data: List[Int]) {
+  private[collections] class MyList[T, Cont <: Traversable[T]](data1: Traversable[T]) {
+    val data: Traversable[T] = data1
 
-    def flatMap(f: Int => MyList) =
-      MyList(data.flatMap(inp => f(inp).data))
+    def flatMap(f: T => MyList[T, Cont]): MyList[T, Cont] = new MyList(data.flatMap(inp => f(inp).data))
 
-    def map(f: Int => Int): MyList = this.flatMap(x => MyList(List(f(x))))
-//    def map(f: Int => Int): MyList = this.flatMap(f andThen List[Int] _ andThen MyList)
+    def map(f: T => T): MyList[T, Cont] = this.flatMap(x => new MyList[T, Cont](Seq(f(x))))
 
-    @tailrec
-    final def foldLeft(acc: Int)(f: (Int, Int) => Int): Int = data match {
-      case Nil => acc
-      case head :: tail => MyList(tail).foldLeft(f(acc, head))(f) // хвостовая? не является ли оверхедом переупаковка в MyList?
+    final def foldLeft(acc: T)(op: (T, T) => T): T = {
+      @tailrec
+      def foldLeftStep(xs: Traversable[T], acc: T): T = xs match {
+        case Nil => acc
+        case head :: tail => foldLeftStep(tail, op(acc, head))
+      }
+      foldLeftStep(data, acc)
     }
 
-    def filter(f: Int => Boolean): MyList =
-      MyList.this.flatMap(x => if (f(x)) MyList(List(x)) else MyList(List()))
+    def filter(f: T => Boolean): MyList[T, Cont] =
+      MyList.this.flatMap((x:T) => new MyList(List(x).filter(f)))
   }
 
-  require(MyList(List(1, 2, 3, 4, 5, 6)).map(_ * 2).data == List(2, 4, 6, 8, 10, 12))
-  require(MyList(List(1, 2, 3, 4, 5, 6)).filter(_ % 2 == 0).data == List(2, 4, 6))
-  require(MyList(List(1, 2, 3, 4, 5, 6)).foldLeft(0){(a, b) => a + b} == 21)
-  require(MyList(Nil).foldLeft(0)((acc, i) => acc + i) == 0)
+  private[collections] class MyListBuffer[T](data1: Traversable[T]) extends MyList[T, ListBuffer[T]](data1)
 
-  println( MyList(List(1, 2, 3, 4, 5, 6)).flatMap(x => MyList(List(x*3))) )
-  println(MyList(List(1, 2, 3, 4, 5, 6)).map(_ * 2))
-  println(MyList(List(1, 2, 3, 4, 5, 6)).filter(_ % 2 == 0))
-  println(MyList(List(1, 2, 3, 4, 5, 6)).foldLeft(0){(a, b) => a + b})
+  private[collections] class MyIndexedList[T](data1: Traversable[T]) extends MyList[T, ArrayBuffer[T]](data1)
+
 }

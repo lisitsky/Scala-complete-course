@@ -58,7 +58,14 @@ case class BSTImpl(value: Int,
     case BSTImpl(v, _, r) if v < value => r.flatMap(_.find(value))
   }
 
-  def fold(aggregator: Int)(f: (Int, Int) =>(Int)): Int = BSTContainer.fromBST(this).map(_.bst.value).fold(aggregator)(f)
+  def fold(aggregator: Int)(f: (Int, Int) =>(Int)): Int = foldIter(Seq(left, right)).map(_.get).map(_.value).fold(aggregator)(f)
+
+  private[this] def foldIter(nextNodes: Seq[Option[BST]], visitedNodes: Seq[Option[BST]] = Nil): Seq[Option[BST]] = nextNodes match {
+    case Nil => visitedNodes
+    case head :: tail =>
+      val children: Seq[Option[BST]] = Seq(head.flatMap(x=>x.left), head.flatMap(x=>x.right)).filter(_.isDefined)
+      foldIter(tail ++ children, visitedNodes :+ head)
+  }
 }
 
 // BST Container is a class for BST linearization - each node in tree is put into

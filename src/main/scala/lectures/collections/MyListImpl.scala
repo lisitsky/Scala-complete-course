@@ -20,8 +20,7 @@ import scala.collection.mutable.{ArrayBuffer, ListBuffer}
   */
 object MyListImpl extends App {
 
-  private[collections] class MyList[T, Cont <: Traversable[T]](data1: Traversable[T]) {
-    val data: Traversable[T] = data1
+  private[collections] class MyList[T, Cont <: Traversable[T]](val data: Traversable[T]) {
 
     def flatMap(f: T => MyList[T, Cont]): MyList[T, Cont] = new MyList(data.flatMap(inp => f(inp).data))
 
